@@ -1,0 +1,189 @@
+<html>
+<head>
+	<title>ASoIaF Character Generator</title>
+	<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="names.js"></script>
+	<script src="character.js"></script>
+	
+	<script type="text/javascript">
+	
+	var generated = false;
+	
+	var selectedGender = "Random";
+	var selectedRegion = "Random";
+	var selectedHouse = "Random";
+	
+	$(document).ready(function() {
+		
+		disableSelection(document.getElementById('generate-button'));
+		disableSelection(document.getElementById('footer'));
+		
+		$('#generate-button').mousedown(function() {
+			$('#generate-button').addClass('black');
+		});	
+		
+		$('#generate-button').mouseup(function() {
+			$(this).removeClass("black");
+			
+			var $all = $('#main');
+			var $both = $('#charName, #charDesc');
+			
+			if (generated) {
+			$all.fadeOut('fast', generateCharacter);
+			}
+			else {
+				generated = true;
+				$all.fadeOut(0, generateCharacter);
+			}	
+			
+			$all.fadeIn('fast');
+		});	
+		
+		$('#generate-button').mouseleave(function() {
+			$(this).removeClass("black");
+		});	
+		
+		$('.drawer-tab').click(function() {
+			$(this).next().slideToggle();
+		});
+		
+		$('.gender').click(function() {
+			if ($(this).html() != selectedGender){
+				$('.gender').removeClass('selected');
+				$(this).addClass('selected');
+				selectedGender = $(this).html();
+			}
+		});
+		
+		$('.region').click(function() {
+			if ($(this).html() != selectedRegion){
+				$('.region').removeClass('selected');
+				$(this).addClass('selected');
+				selectedRegion = $(this).html();
+				selectedHouse = 'Random';
+				setHouseOptions();
+			}
+		});
+		
+		$('#house-table').on('click', '.house', function() {
+			if ($(this).html() != selectedRegion){
+				$('.house').removeClass('selected');
+				$(this).addClass('selected');
+				selectedHouse = $(this).html();
+			}
+		});
+	});
+	
+	function setHouseOptions(){
+		if (selectedRegion === 'Random') {
+			$('#house-table').html('<tr><td></td></tr>');
+		} else {
+			var houses = houseNames[selectedRegion]();
+			var table = '';
+			for (var i = 0; i < houses.length; i++) {
+				if (i % 3 == 0){table += '<tr>';}
+				table += '<td class=\'house\'>' + houses[i] + '</td>';
+				if (i % 3 == 2){table += '</tr>';}
+			}
+			table += '<td class=\'house selected\'>Random</td></tr>';
+			$('#house-table').html(table);
+		}
+	}
+	
+	function generateCharacter(){
+		var character = new Character(selectedGender, selectedRegion, selectedHouse);
+		
+		$('#charName').html(character.getName());
+		
+		$('#charDesc').html(character.getDesc());
+	}
+	
+	/***********************************************
+	* Disable Text Selection script- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
+	* This notice MUST stay intact for legal use
+	* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+	
+	***********************************************/
+	
+	function disableSelection(target){
+	
+	    if (typeof target.onselectstart!="undefined") //IE route
+	        target.onselectstart=function(){return false}
+	
+	    else if (typeof target.style.MozUserSelect!="undefined") //Firefox route
+	        target.style.MozUserSelect="none"
+	
+	    else //All other route (ie: Opera)
+	        target.onmousedown=function(){return false}
+	
+	    target.style.cursor = "default"
+	}
+	
+	</script>
+
+</head>
+
+<body>
+
+	<div id="title">
+		
+		A Song of Ice and Fire</br>Character Generator
+	
+	</div>
+	
+	<div id="main">
+		<div id='centered'>
+		
+		<div id="char">
+
+			<div id="charName"></div>
+			
+			<div id="charDesc"></div>
+		
+		</div>
+	
+		<div id="generate-button">Generate!</div>
+		
+		</div>
+	
+	</div>
+	
+	<div id='footer'>
+		
+			<div class='drawer'>
+			
+				<div class='drawer-tab'>Options</div>
+				<div class='drawer-body'>
+					<div class='category' id='gender-drawer'>
+						<table class='drawer-table' style='width:120px'>
+							<tr><td class='gender'>Male</td></tr>
+							<tr><td class='gender'>Female</td></tr>
+							<tr><td></td></tr>
+							<tr><td></td></tr>
+							<tr><td class='gender selected'>Random</td></tr>
+						</table>
+					</div>
+					<div class='category' id='region-drawer'>
+						<table class='drawer-table' style='width:240px'>
+							<tr><td class='region'>North</td><td class='region'>Riverlands</td></tr>
+							<tr><td class='region'>Iron Islands</td><td class='region'>Vale</td></tr>
+							<tr><td class='region'>Westerlands</td><td class='region'>Crownlands</td></tr>
+							<tr><td class='region'>Reach</td><td class='region'>Stormlands</td></tr>
+							<tr><td class='region'>Dorne</td><td class='region selected'>Random</td></tr>
+						</table>
+					</div>
+					<div class='category' id='house-drawer'>
+						<table class='drawer-table' id='house-table' style='width:360px; border-right-style: solid;'>
+							<tr><td></td></tr>
+						</table>
+					</div>
+				
+				</div>
+			
+			</div>
+	</div>
+
+</body>
+
+</html>
